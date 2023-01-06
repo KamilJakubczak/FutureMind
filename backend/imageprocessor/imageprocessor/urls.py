@@ -1,11 +1,11 @@
 from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
-from Images.views import ImagesList
+from images.views import ImagesList
 
 
 router = DefaultRouter()
-router.register(r'images', ImagesList, basename="image")
+router.register(r'images', ImagesList, basename="images")
 
 urlpatterns = [
     path('', include(router.urls)),
