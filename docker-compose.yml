@@ -24,20 +24,35 @@ services:
             - DB_PASSWORD=${DB_PASSWORD}
             - DB_PORT=${DB_PORT}
             - DB_HOST=${DB_HOST}
-            - PRODUCTION=${PRODUCTION}
+            - ENV=${ENV}
             - SECRET_KEY=${SECRET_KEY}
         volumes:
             - ./backend:/backend
         networks:
             - futuremind_database_network
+            - futuremind_backend_network
         depends_on:
             - futuremind_postgres
         ports:
             - 8007:8001
 #        restart: always
+    futuremind_gateway:
+        image: nginx
+        volumes:
+            - ./nginx.conf:/etc/nginx/nginx.conf:ro
+            - ./backend/imageprocessor/static:/var/www/static
+            - ./backend/imageprocessor/media:/var/www/media
+        depends_on:
+            - futuremind_backend
+        networks:
+            - futuremind_backend_network
+        ports:
+             - 8000:8001
+        restart: always
 volumes:
     futuremind_database:
 networks:
     futuremind_database_network:
+    futuremind_backend_network:
 
 

@@ -7,11 +7,11 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 router = DefaultRouter()
-router.register(r'images', ImagesList, basename="images")
+router.register(r'', ImagesList, basename="images")
 
 
 urlpatterns = [
-    path('', include(router.urls)),
+    path('images/', include(router.urls)),
     path('admin/', admin.site.urls),
 # OpenAPI 3 documentation with Swagger UI
     path("schema/", SpectacularAPIView.as_view(), name="schema"),

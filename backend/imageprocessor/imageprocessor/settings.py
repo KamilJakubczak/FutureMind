@@ -1,10 +1,16 @@
 import os
 from pathlib import Path
+import logging
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
+console = logging.StreamHandler()
+console.setLevel(logging.DEBUG)
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+console.setFormatter(formatter)
+logging.getLogger('').addHandler(console)
+logger = logging.getLogger('settings')
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-ENV = os.environ.get('env')
+ENV = os.environ.get('ENV')
 
 
 def load_environment_variable(name: str) -> str:
@@ -21,7 +27,6 @@ SECRETS = {
     'DB_PASSWORD': None,
     'DB_HOST': None,
     'DB_PORT': None,
-    'PRODUCTION': None,
     'SECRET_KEY': None,
 }
 if ENV == 'prod':
@@ -31,6 +36,7 @@ if ENV == 'prod':
         SECRETS[secret] = load_environment_variable(secret)
 
     SECRET_KEY = SECRETS['SECRET_KEY']
+    logger.warning('POSTGRES')
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
@@ -42,6 +48,8 @@ if ENV == 'prod':
         }
     }
 else:
+
+    logger.warning('SQLITE')
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
@@ -55,8 +63,8 @@ else:
 # SECURITY WARNING: don't run with debug turned on in production!
 
 ALLOWED_HOSTS = ['*']
-
-
+CORS_ORIGIN_ALLOW_ALL = True
+CSRF_TRUSTED_ORIGINS = [ 'http://localhost', 'http://0.0.0.0', 'http://127.0.0.1:8000']
 # Application definition
 
 INSTALLED_APPS = [
@@ -66,6 +74,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'corsheaders',
     'rest_framework',
     "drf_spectacular",
     'images',
@@ -74,6 +83,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',

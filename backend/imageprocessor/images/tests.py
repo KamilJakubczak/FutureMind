@@ -3,9 +3,21 @@ from django.urls import reverse
 from rest_framework import status
 from images.models import Image
 from utils import generate_dummy_image
-import tempfile
+
 
 IMAGES_LIST = reverse('images-list')
+
+
+def create_image_in_db(api_client, title='title'):
+    name = 'test'
+    extension = 'jpeg'
+    full_name = f'{name}.{extension}'
+    image = generate_dummy_image(filename=name, extension=extension)
+    payload = {'title': title, 'width': 2, 'height': 2,
+               'image': (full_name, image, 'image/jpeg')}
+
+    response = api_client.post(IMAGES_LIST, data=payload)
+    return response
 
 
 @pytest.fixture
@@ -29,7 +41,7 @@ def test_missing_id_image(api_client):
 
 @pytest.mark.django_db
 def test_existing_id_image(api_client):
-    a = Image.objects.create(title='Test', height=12, width=20)
+    create_image_in_db(api_client)
     images = Image.objects.all()
     url = IMAGES_LIST + '1/'
     response = api_client.get(url)
@@ -39,23 +51,16 @@ def test_existing_id_image(api_client):
 
 @pytest.mark.django_db
 def test_filtering(api_client):
-    Image.objects.create(title='Test', height=12, width=20)
-    Image.objects.create(title='Titile', height=12, width=20)
+
+    create_image_in_db(api_client, title='test')
+    create_image_in_db(api_client)
     images = Image.objects.all()
-    response = api_client.get(IMAGES_LIST, {'title': 'ile'})
+    response = api_client.get(IMAGES_LIST, {'title': 'tl'})
     assert len(images) == 2
     assert response.data['count'] == 1
 
 
-# Model
 @pytest.mark.django_db
 def test_creating_image_ok(api_client):
-    name = 'test'
-    extension = 'jpeg'
-    full_name = f'{name}.{extension}'
-    image = generate_dummy_image(filename=name, extension=extension)
-    payload = {'title': 'title', 'width': 2, 'height': 2, 'url': 'etst',
-               'image': (full_name, image, 'image/jpeg')}
-
-    response = api_client.post(IMAGES_LIST, data=payload)
+    response = create_image_in_db(api_client)
     assert response.status_code == status.HTTP_201_CREATED

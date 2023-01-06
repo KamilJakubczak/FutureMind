@@ -16,4 +16,4 @@ RUN chmod -R 755 .
 
 USER user
 
-CMD python manage.py makemigrations && python manage.py migrate &&  gunicorn --bind=0.0.0.0:8001 imageprocessor.wsgi
+CMD python manage.py makemigrations && python manage.py migrate && python manage.py collectstatic --noinput && gunicorn --bind=0.0.0.0:8001 imageprocessor.wsgi

@@ -5,7 +5,7 @@ from .models import Image
 class ImageSerializerCreate(serializers.ModelSerializer):
     class Meta:
         model = Image
-        fields = ['title', 'width', 'height', 'image']
+        fields = ['id', 'title', 'width', 'height', 'image']
 
 
 class ImageSerializerList(serializers.ModelSerializer):
