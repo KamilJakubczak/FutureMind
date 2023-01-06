@@ -29,7 +29,7 @@ def test_missing_id_image(api_client):
 
 @pytest.mark.django_db
 def test_existing_id_image(api_client):
-    Image.objects.create(title='Test', height=12, width=20)
+    a = Image.objects.create(title='Test', height=12, width=20)
     images = Image.objects.all()
     url = IMAGES_LIST + '1/'
     response = api_client.get(url)
