@@ -7,6 +7,8 @@ from images.views import ImagesList
 router = DefaultRouter()
 router.register(r'images', ImagesList, basename="images")
 
+#TODO Add swagger
+
 urlpatterns = [
     path('', include(router.urls)),
     path('admin/', admin.site.urls),
