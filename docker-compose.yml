@@ -1,0 +1,47 @@
+version: "3.2"
+services:
+    futuremind_postgres:
+        image: postgres
+        environment:
+            - POSTGRES_USER=${DB_USER}
+            - POSTGRES_DB=${DB_NAME}
+            - POSTGRES_PASSWORD=${DB_PASSWORD}
+        volumes:
+            - futuremind_database:/var/lib/postgresql/data
+        ports:
+            - 5439:5432
+        networks:
+            - futuremind_database_network
+        restart: always
+    futuremind_backend:
+        build:
+            dockerfile: Dockerfile
+            context: .
+        image: futuremind_backend
+        environment:
+            - DB_USER=${DB_USER}
+            - DB_NAME=${DB_NAME}
+            - DB_PASSWORD=${DB_PASSWORD}
+            - DB_PORT=${DB_PORT}
+            - DB_HOST=${DB_HOST}
+            - PRODUCTION=${PRODUCTION}
+            - SECRET_KEY=${SECRET_KEY}
+        volumes:
+            - ./backend:/backend
+        networks:
+            - futuremind_database_network
+            - futuremind_backend_network
+        depends_on:
+            - futuremind_postgres
+        ports:
+            - 8007:8001
+        # network_mode: host
+        restart: always
+volumes:
+    futuremind_database:
+
+networks:
+    futuremind_database_network:
+    futuremind_backend_network:
+
+
