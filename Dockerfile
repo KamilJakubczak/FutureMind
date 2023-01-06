@@ -6,7 +6,7 @@ COPY ./backend ./backend/
 
 RUN pip install -r ./backend/requirements.txt
 
-WORKDIR backend/ImageProcessor
+WORKDIR backend/imageprocessor
 
 RUN adduser user
 
@@ -16,4 +16,4 @@ RUN chmod -R 755 .
 
 USER user
 
-CMD python manage.py makemigrations && python manage.py migrate &&  gunicorn --bind=0.0.0.0:8001 --timeout 600 ImageProcessor.wsgi
+CMD python manage.py makemigrations && python manage.py migrate &&  gunicorn --bind=0.0.0.0:8001 imageprocessor.wsgi

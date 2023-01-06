@@ -4,19 +4,58 @@ from pathlib import Path
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+ENV = os.environ.get('env')
 
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-xxc9gh)855gq^$c4)g02*qy71m8f##9f@r@z4n6*9kh#k14uz0'
+def load_environment_variable(name: str) -> str:
+    variable_value = os.environ.get(name, None)
+    if not variable_value:
+        raise ValueError(
+            f'Brak zmienneś środowiskowej - {name}')
+    return variable_value
+
+
+SECRETS = {
+    'DB_NAME': None,
+    'DB_USER': None,
+    'DB_PASSWORD': None,
+    'DB_HOST': None,
+    'DB_PORT': None,
+    'PRODUCTION': None,
+    'SECRET_KEY': None,
+}
+if ENV == 'prod':
+
+    DEBUG = False
+    for secret in SECRETS.keys():
+        SECRETS[secret] = load_environment_variable(secret)
+
+    SECRET_KEY = SECRETS['SECRET_KEY']
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': SECRETS['DB_NAME'],
+            'USER': SECRETS['DB_USER'],
+            'PASSWORD': SECRETS['DB_PASSWORD'],
+            'HOST': SECRETS['DB_HOST'],
+            'PORT': SECRETS['DB_PORT'],
+        }
+    }
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
+    }
+    DEBUG = True
+    SECRET_KEY = 'django-insecure-dummy'
+
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
-#TODO Add pagination
 
 # Application definition
 
@@ -44,34 +83,8 @@ MIDDLEWARE = [
 
 ROOT_URLCONF = 'imageprocessor.urls'
 
-TEMPLATES = [
-    {
-        'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
-        'APP_DIRS': True,
-        'OPTIONS': {
-            'context_processors': [
-                'django.template.context_processors.debug',
-                'django.template.context_processors.request',
-                'django.contrib.auth.context_processors.auth',
-                'django.contrib.messages.context_processors.messages',
-            ],
-        },
-    },
-]
 
 WSGI_APPLICATION = 'imageprocessor.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/4.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
-    }
-}
 
 
 # Password validation
@@ -105,11 +118,6 @@ USE_I18N = True
 USE_TZ = True
 
 
-# Static files (CSS, JavaScript, images)
-# https://docs.djangoproject.com/en/4.1/howto/static-files/
-
-STATIC_URL = 'static/'
-
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
 
@@ -119,6 +127,7 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 5,
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
 }
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",

@@ -37,6 +37,16 @@ def test_existing_id_image(api_client):
     assert response.status_code == status.HTTP_200_OK
 
 
+@pytest.mark.django_db
+def test_filtering(api_client):
+    Image.objects.create(title='Test', height=12, width=20)
+    Image.objects.create(title='Titile', height=12, width=20)
+    images = Image.objects.all()
+    response = api_client.get(IMAGES_LIST, {'title': 'ile'})
+    assert len(images) == 2
+    assert response.data['count'] == 1
+
+
 # Model
 @pytest.mark.django_db
 def test_creating_image_ok(api_client):

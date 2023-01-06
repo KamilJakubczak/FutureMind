@@ -12,6 +12,9 @@ class Image(models.Model):
     width = models.IntegerField(validators=[MinValueValidator(1, 'Image width cannot be smaller than 1')])
 
 
-@receiver(pre_save)
-def resize_image_before_save(sender, instance, *args, **kwargs):
-    instance.image.file = resize_image(instance.image, instance.width, instance.height)
+# @receiver(pre_save)
+# def resize_image_before_save(sender, instance, *args, **kwargs):
+#     try:
+#         instance.image.file = resize_image(instance.image, instance.width, instance.height)
+#     except:
+#         pass

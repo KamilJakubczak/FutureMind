@@ -8,11 +8,11 @@ services:
             - POSTGRES_PASSWORD=${DB_PASSWORD}
         volumes:
             - futuremind_database:/var/lib/postgresql/data
-        ports:
-            - 5439:5432
+#        ports:
+#            - 5439:5432
         networks:
             - futuremind_database_network
-        restart: always
+#        restart: always
     futuremind_backend:
         build:
             dockerfile: Dockerfile
@@ -30,18 +30,14 @@ services:
             - ./backend:/backend
         networks:
             - futuremind_database_network
-            - futuremind_backend_network
         depends_on:
             - futuremind_postgres
         ports:
             - 8007:8001
-        # network_mode: host
-        restart: always
+#        restart: always
 volumes:
     futuremind_database:
-
 networks:
     futuremind_database_network:
-    futuremind_backend_network:
 
 
